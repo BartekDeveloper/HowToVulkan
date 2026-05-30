@@ -7,7 +7,7 @@ SPDX-License-Identifier: CC-BY-SA-4.0
 
 !!! Info
 
-	Last updated 2026-04-27: Semaphore clarification
+	Last updated 2026-05-30: Descriptor array clarification
 
 
 ## Intro
@@ -740,9 +740,9 @@ A call to [vkAllocateCommandBuffers](https://docs.vulkan.org/refpages/latest/ref
 
 ## Loading textures
 
-We are now going to load the textures used for rendering the 3D models. In Vulkan, those are images, just like the swapchain or depth image. From a GPU's perspective, images are more complex than buffers, something that's reflected in the verbosity around getting them uploaded to the GPU. 
+We are now going to load the textures used for rendering the 3D models. In Vulkan, textures are images, just like the swapchain or depth image. From a GPU's perspective, images are more complex than buffers, something that's reflected in the verbosity around getting them uploaded to the GPU. 
 
-There are lots of image formats, but we'll go with [KTX](https://www.khronos.org/ktx/), a container format by Khronos. Unlike formats such as JPEG or PNG, it stores images in native GPU formats, meaning we can directly upload them without having to decompress or convert. It also supports GPU specific features like storing mip maps, 3D textures and cubemaps. One tool for creating KTX image files is [PVRTexTool](https://developer.imaginationtech.com/solutions/pvrtextool/).
+There are a lot of image file formats around, but we'll go with [KTX](https://www.khronos.org/ktx/), a container format by Khronos. Unlike file formats such as JPEG or PNG, it stores images in native GPU layout, meaning we can directly upload them without having to decompress or convert. It also supports GPU specific features like storing mip maps, 3D textures and cubemaps. One tool for creating KTX image files is [PVRTexTool](https://developer.imaginationtech.com/solutions/pvrtextool/).
 
 With the help of that library, loading such a file from disk is trivial:
 
@@ -931,7 +931,7 @@ Now that we have uploaded the texture images, put them into the correct layout a
 
 In earlier Vulkan versions we would also have to use them for buffers, but as noted in the [shader data buffers](#shader-data-buffers) chapter, buffer device address saves us from doing that. There's no easy to use or widely available equivalent to that for images yet.
 
-And while descriptor handling is still one of the most verbose parts, using [descriptor indexing](https://docs.vulkan.org/refpages/latest/refpages/source/VK_EXT_descriptor_indexing.html) simplifies this significantly and makes it easier to scale. With that feature we can go for a "bindless" setup, where all textures are put into one large array and indexed in the [shader](#the-shader) rather than having to create and bind descriptor sets for each and every texture. To demonstrate how this works, we'll be loading multiple textures. This approach scales up no matter how many textures you use (within the limits of what the GPU supports).
+And while descriptor handling is still one of the most verbose parts, using [descriptor indexing](https://docs.vulkan.org/refpages/latest/refpages/source/VK_EXT_descriptor_indexing.html) simplifies this significantly and makes it easier to scale. With that feature we can go for a "bindless" setup, where all image descriptors for the textures are put into one large array and indexed in the [shader](#the-shader) rather than having to create and bind descriptor sets for every texture. To demonstrate how this works, we'll be loading multiple textures. This approach scales up no matter how many textures you use (within the limits of what the GPU supports).
 
 First we define the interface between our application and the shader in the form of a descriptor set layout:
 
